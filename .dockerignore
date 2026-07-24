@@ -1,0 +1,15 @@
+.git
+.venv
+.pytest_cache
+.ruff_cache
+.coverage
+coverage.xml
+junit.xml
+.ipynb_checkpoints
+__pycache__
+*.py[cod]
+*.egg-info
+build
+dist
+htmlcov
+tmp

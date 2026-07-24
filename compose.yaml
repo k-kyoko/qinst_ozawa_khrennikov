@@ -1,0 +1,17 @@
+services:
+  jupyter:
+    build:
+      context: .
+    working_dir: /work
+    volumes:
+      - .:/work
+    ports:
+      - "127.0.0.1:8888:8888"
+    command:
+      - jupyter
+      - lab
+      - --ServerApp.ip=0.0.0.0
+      - --ServerApp.port=8888
+      - --ServerApp.root_dir=/work
+      - --ServerApp.open_browser=False
+      - --ServerApp.allow_root=True

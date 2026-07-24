@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qinst-ozawa"
+version = "0.1.0"
+description = "Python workspace for Ozawa and Khrennikov (2021)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+authors = [
+  { name = "Qinst Ozawa contributors" },
+]
+dependencies = [
+  "numpy>=1.26,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "jupyterlab>=4.2,<5",
+  "pytest>=8,<9",
+  "ruff>=0.6,<1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qinst_ozawa"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
