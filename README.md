@@ -1,62 +1,113 @@
 # qinst-ozawa
 
-Python 3.12、JupyterLab、Docker Composeを使用する開発環境です。
 
-## JupyterLab
+This library reproduces the calculations in Section 11 of Ozawa and Khrennikov
+(2021), “Modeling combination of question order effect, response replicability
+effect, and QQ-equality with quantum instruments.”
 
-イメージをビルドしてJupyterLabを起動します。
+The current implementation uses the Clinton–Gore data to:
 
-```bash
-docker compose up --build
+1. calculate the QQ residual of the observed sequential joint probabilities;
+2. renormalize the probabilities so that they satisfy the QQ equality;
+3. estimate the personality and belief distributions of the independent-personality
+   model; and
+4. reconstruct the sequential joint probabilities from the estimated distributions.
+
+```python
+from qinst_ozawa import (
+    CLINTON_GORE,
+    SequentialProbabilities,
+    fit_independent_model,
+    qqe_renormalize,
+    reconstruct_jointprobdists,
+)
+
+observed = SequentialProbabilities.from_mapping(CLINTON_GORE)
+renormalized = qqe_renormalize(observed)
+parameters = fit_independent_model(renormalized.normalized)
+reconstructed = reconstruct_jointprobdists(parameters)
 ```
 
-起動ログに表示される `http://127.0.0.1:8888/lab?token=...` をブラウザで開いてください。
-ホスト側のディレクトリ全体がコンテナ内の `/work` にマウントされます。
+### Model hypothesis
 
-停止する場合は `Ctrl-C` を押した後、次を実行します。
+Following Eq. (118) of the paper, the implementation assumes that the belief
+state `(alpha, beta)` and the personality state `gamma` are independent:
 
-```bash
-docker compose down
+```text
+mu(alpha, beta, gamma) = p(alpha, beta) q(gamma)
 ```
 
-## 環境の確認
+Here, `p` is a distribution over four belief states and `q` is a distribution
+over three personality states.
 
-```bash
-make smoke
+### Applicable data
+
+- Questions A and B both have binary yes/no responses.
+- Four sequential joint probabilities are available for each question order,
+  A→B and B→A.
+- The four probabilities for each order are finite values in `[0, 1]` and sum
+  to `1`.
+- Probabilities passed to `fit_independent_model()` satisfy the QQ equality.
+  Apply `qqe_renormalize()` first when the observed data do not satisfy it.
+- Estimation using Eqs. (137)–(138) requires both `p(Ay) != p(By)` and
+  `p(Ay) != p(Bn)`.
+- Estimation of the belief distribution using Eqs. (141)–(144) requires
+  `q(0) != 0`.
+- All inferred values in `p` and `q` must be nonnegative, and each distribution
+  must sum to `1`.
+
+If these conditions are not met, the data may not be representable by the
+independent-personality model, or the parameters may not be uniquely identifiable
+from these equations.
+
+Ozawa and Khrennikov (2021), “Modeling combination of question order effect,
+response replicability effect, and QQ-equality with quantum instruments” の
+Section 11にある計算をPythonで再現するためのライブラリです。
+
+現在の実装は、Clinton–Goreデータを用いて次の計算を行います。
+
+1. 観測された逐次同時確率のQQ残差を計算する。
+2. QQ equalityを満たすように確率を再正規化する。
+3. 独立人格モデルの人格分布と信念分布を推定する。
+4. 推定した分布から逐次同時確率を再構成する。
+
+```python
+from qinst_ozawa import (
+    CLINTON_GORE,
+    SequentialProbabilities,
+    fit_independent_model,
+    qqe_renormalize,
+    reconstruct_jointprobdists,
+)
+
+observed = SequentialProbabilities.from_mapping(CLINTON_GORE)
+renormalized = qqe_renormalize(observed)
+parameters = fit_independent_model(renormalized.normalized)
+reconstructed = reconstruct_jointprobdists(parameters)
 ```
 
-このコマンドは、コンテナ内のカレントディレクトリ、Pythonパッケージのimport、
-JupyterLabのバージョンを確認します。
+### モデルの仮説
 
-## テストと静的チェック
+この実装では、論文のEq. (118)に従い、信念状態
+`(alpha, beta)` と人格状態 `gamma` が独立であると仮定します。
 
-```bash
-docker compose run --rm jupyter pytest
-docker compose run --rm jupyter ruff check .
+```text
+mu(alpha, beta, gamma) = p(alpha, beta) q(gamma)
 ```
 
-または次のコマンドを使用できます。
+ここで、`p`は4 (2x2)状態の信念分布、`q`は3状態の人格分布です。
 
-```bash
-make test
-make lint
-```
+### 適用できるデータ
 
-## 依存関係
+- 質問Aと質問Bがともに二値回答（yes/no）である。
+- A→B順とB→A順について、それぞれ4つの逐次同時確率が与えられる。
+- 各質問順の4確率は有限な`0`以上`1`以下の値で、合計が`1`である。
+- `fit_independent_model()`へ渡す確率はQQ equalityを満たす。観測データが
+  満たさない場合は、先に`qqe_renormalize()`を適用する。
+- Eqs. (137)–(138)による推定には、`p(Ay) != p(By)`かつ
+  `p(Ay) != p(Bn)`が必要である。
+- Eqs. (141)–(144)による信念分布の推定には、`q(0) != 0`が必要である。
+- 推定された`p`と`q`は、すべて非負で、それぞれ合計が`1`になる必要がある。
 
-依存関係は `pyproject.toml` で管理します。変更した場合はイメージを再ビルドします。
-
-```bash
-docker compose build
-```
-
-`src/` 以下はeditable installされるため、Pythonコードだけの変更では再ビルドは不要です。
-
-## Git
-
-初回だけ、このディレクトリで次を実行します。
-
-```bash
-git init -b main
-git status
-```
+これらの条件を満たさないデータは、独立人格モデルでは表現できないか、
+この推定式だけからはパラメータを一意に決定できません。

@@ -1,6 +1,7 @@
 import sys
 
 import numpy as np
+
 import qinst_ozawa
 from qinst_ozawa import CLINTON_GORE
 
