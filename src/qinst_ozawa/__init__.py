@@ -1,6 +1,6 @@
 """Python package for the Ozawa--Khrennikov project."""
 
-from .data import CLINTON_GORE
+from .data import CLINTON_GORE, BLACK_WHITE, ROSE_JACKSON
 from .independent_model import (
     BeliefDistribution,
     IndependentModelParameters,
@@ -18,6 +18,8 @@ from .probabilities import (
 __all__ = [
     "BeliefDistribution",
     "CLINTON_GORE",
+    "BLACK_WHITE",
+    "ROSE_JACKSON",
     "IndependentModelParameters",
     "PersonalityDistribution",
     "QQRenormalizationResult",

@@ -5,6 +5,9 @@ This library reproduces the calculations in Section 11 of Ozawa and Khrennikov
 (2021), “Modeling combination of question order effect, response replicability
 effect, and QQ-equality with quantum instruments.”
 
+Also, it has supplementary data from Wang et al. (2014). However, using these data, 
+this model yields calculation error.
+
 The current implementation uses the Clinton–Gore data to:
 
 1. calculate the QQ residual of the observed sequential joint probabilities;
@@ -60,6 +63,8 @@ If these conditions are not met, the data may not be representable by the
 independent-personality model, or the parameters may not be uniquely identifiable
 from these equations.
 
+# 日本語
+このライブラリは、
 Ozawa and Khrennikov (2021), “Modeling combination of question order effect,
 response replicability effect, and QQ-equality with quantum instruments” の
 Section 11にある計算をPythonで再現するためのライブラリです。
@@ -70,6 +75,9 @@ Section 11にある計算をPythonで再現するためのライブラリです�
 2. QQ equalityを満たすように確率を再正規化する。
 3. 独立人格モデルの人格分布と信念分布を推定する。
 4. 推定した分布から逐次同時確率を再構成する。
+
+また、補助的データとしてWang et al. (2014)のデータを格納しています。ただしこれらのデータはこのモデルではエラーが起きます。
+Z. Wang, T. Solloway, R.M. Shiffrin, & J.R. Busemeyer, Context effects produced by question orders reveal quantum nature of human judgments, Proc. Natl. Acad. Sci. U.S.A. 111 (26) 9431-9436, https://doi.org/10.1073/pnas.1407756111 (2014).
 
 ```python
 from qinst_ozawa import (
