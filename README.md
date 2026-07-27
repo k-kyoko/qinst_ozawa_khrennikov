@@ -1,4 +1,4 @@
-# qinst-ozawa
+# qinst-ozawa-khrennikov
 
 
 This library reproduces the calculations in Section 11 of Ozawa and Khrennikov
