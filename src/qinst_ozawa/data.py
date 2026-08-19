@@ -26,6 +26,7 @@ BLACK_WHITE: dict[str, float] = {
     "BnAn": 0.4012,
 }
 
+# high QQE violation
 ROSE_JACKSON: dict[str, float] = {
     "AyBy": 0.3379,
     "AyBn": 0.3241,
